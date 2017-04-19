@@ -1,6 +1,15 @@
 # xradio
 Port Allwinner xradio driver to mainline Linux.
 
+#READ THIS
+
+This driver just about works. If it loads and starts working normally it usually doesn't have any major issues until you try to reboot. The structure of the driver isn't great and it can lock up the kernel if it gets confused. It's not production ready for your large scale commercial IoT deployment.
+
+Also: The xr819 chip/firmware drops tons and tons of frames with FCS errors and this makes performance horrible at best.
+Most people have lost interest in having anything to do with the xr819 because of people being idiots and demanding that issues that are incredibly hard to fix without documentation be fixed because they spent $8 on a board and somehow people that got exactly zero of their $8 are responsible.
+
+Moral of the story: If you're going to post nasty things on the interwebs and demand people fix stuff because *reasons* at least have a bunch of packet dumps etc and have some idea about what you're talking about.
+
 #Building
 
 Something like this:
