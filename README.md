@@ -1,7 +1,7 @@
 # xradio
 Port Allwinner xradio driver to mainline Linux.
 
-#READ THIS
+# READ THIS
 
 This driver just about works. If it loads and starts working normally it usually doesn't have any major issues until you try to reboot. The structure of the driver isn't great and it can lock up the kernel if it gets confused. It's not production ready for your large scale commercial IoT deployment.
 
@@ -10,7 +10,7 @@ Most people have lost interest in having anything to do with the xr819 because o
 
 Moral of the story: If you're going to post nasty things on the interwebs and demand people fix stuff because *reasons* at least have a bunch of packet dumps etc and have some idea about what you're talking about.
 
-#Building
+# Building
 
 Something like this:
 
@@ -19,9 +19,27 @@ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -C <PATH TO YOUR LINUX SRC> M=$
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -C <PATH TO YOUR LINUX SRC> M=$PWD INSTALL_MOD_PATH=<PATH TO INSTALL MODULE> modules_install
 ```
 
-#How to use this
+# How to use this
 
 You need to specify one or two regulators for the xr819's 1.8v and 3.3v supplies in your device tree.
+(for example, at: `.../linux_sources/linux-4.12-rc5/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts`)
+
+It is possible to build dtb-s only:
+
+```
+make sunxi_defconfig
+make dtbs
+```
+
+or via cross-compilation:
+
+```
+make -j4 ARCH=arm CROSS_COMPILE=arm-none-eabi- sunxi_defconfig
+make -j4 ARCH=arm CROSS_COMPILE=arm-none-eabi- dtbs
+```
+
+For exmaple, with apropiate archlinux arm kernel build you could use mainline kernel without rebuiding everything, only replacing your dtb-file at `/boot/dtbs/`.
+
 The orange pi zero only has control over the 1.8v regulator and a 3.3v fixed regulator is provided elsewhere
 so we one need one there:
 
@@ -75,6 +93,29 @@ Next you need to add some things to the mmc node that the xr819 is connected to.
 };
 ```
 
+and probably we also need this:
+
+```
+&pio {
+	wifi_wake: wifi_wake {
+		pins = "PG10";
+		function = "gpio_in";
+    };
+};
+
+```
+
+```
+&r_pio {
+	wifi_rst: wifi_rst {
+		pins = "PL7";
+		function = "gpio_out";
+    };
+};
+
+```
+
+example `sun8i-h2-plus-orangepi-zero.dts` is provided too.
 
 vqmmc-supply and vmmc-supply should reference the regulators that control the xr819 supplies.
 The device tree for the SoC the orange pi zero is based on supplies a fixed 3.3v regulator
@@ -92,6 +133,13 @@ probably overwrite the address given after loading the device tree in u-boot. Fo
 uboot all you have to actually do is add something like "ethernet1 = &xr819wifi;" to the
 aliases section of the device tree you give to the kernel and u-boot will update the mac
 address to something based on the unique chip id for you.
+
+# Running
+
+place `xradio_wlan.ko` to your modules folder (for archlinux: `/lib/modules/.../kernel/net/wireless/xradio`)
+
+Don't forget to take [firmware binaries from somewhere](https://github.com/armbian/build/tree/master/bin/firmware-overlay/xr819): `boot_xr819.bin`, `fw_xr819.bin`, `sdd_xr819.bin` (for archlunux place it to `/lib/firmware/xr819/`)
+
 # What works, what doesn't
 
 Working:
@@ -100,7 +148,7 @@ Standard client station mode seems to work fine.
 Master (AP) mode works with WPA/WPA2 enabled etc.
 Dual role station and master mode.
 
-#Issues
+# Issues
 
 The firmware running on the xr819 is very crash happy and the driver is a bit
 stupid. For example the driver can get confused about how many packets of data
@@ -114,7 +162,7 @@ Pings from the device to the network are faster than from the network to the dev
 This seems to be because of latency between the interrupt and servicing RX reports
 from the device.
 
-#Fun stuff
+# Fun stuff
 
 The driver is based on the driver for the ST CW1100/CW1200 chips.
 The XR819 is probably a clone, licensed version or actually a CW1100 family chip
