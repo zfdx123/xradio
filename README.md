@@ -138,7 +138,7 @@ address to something based on the unique chip id for you.
 
 place `xradio_wlan.ko` to your modules folder (for archlinux: `/lib/modules/.../kernel/net/wireless/xradio`)
 
-Don't forget to take [firmware binaries from somewhere](https://github.com/armbian/build/tree/master/bin/firmware-overlay/xr819): `boot_xr819.bin`, `fw_xr819.bin`, `sdd_xr819.bin` (for archlunux place it to `/lib/firmware/xr819/`)
+Don't forget to take [firmware binaries from somewhere](https://github.com/armbian/build/tree/master/packages/extras/firmware/xr819): `boot_xr819.bin`, `fw_xr819.bin`, `sdd_xr819.bin` (for archlunux place it to `/lib/firmware/xr819/`)
 
 # What works, what doesn't
 
