@@ -1742,10 +1742,16 @@ void xradio_ba_work(struct work_struct *work)
 	wsm_unlock_tx(hw_priv);
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))
+void xradio_ba_timer(struct timer_list *t)
+{
+	struct xradio_common *hw_priv = from_timer(hw_priv, t, ba_timer);
+#else
 void xradio_ba_timer(unsigned long arg)
 {
-	bool ba_ena;
 	struct xradio_common *hw_priv = (struct xradio_common *)arg;
+#endif
+	bool ba_ena;
 
 
 	spin_lock_bh(&hw_priv->ba_lock);
@@ -1827,9 +1833,13 @@ int xradio_vif_setup(struct xradio_vif *priv)
 #ifdef AP_HT_CAP_UPDATE
         INIT_WORK(&priv->ht_oper_update_work, xradio_ht_oper_update_work);
 #endif
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))
+	timer_setup(&priv->mcast_timeout, xradio_mcast_timeout, 0);
+#else
 	init_timer(&priv->mcast_timeout);
 	priv->mcast_timeout.data = (unsigned long)priv;
 	priv->mcast_timeout.function = xradio_mcast_timeout;
+#endif
 	priv->setbssparams_done = false;
 	priv->power_set_true = 0;
 	priv->user_power_set_true = 0;

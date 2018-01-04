@@ -12,6 +12,7 @@
 #ifndef XRADIO_H
 #define XRADIO_H
 
+#include <linux/version.h>
 #include <linux/wait.h>
 #include <linux/mutex.h>
 #include <linux/workqueue.h>

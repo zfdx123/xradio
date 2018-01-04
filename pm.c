@@ -256,8 +256,17 @@ void xradio_pm_unlock_awake(struct xradio_pm_state *pm)
 
 #else /* CONFIG_WAKELOCK */
 
+
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))
+static void xradio_pm_stay_awake_tmo(struct timer_list *t)
+{
+	struct xradio_pm_state *pm = from_timer(pm, t, stay_awake);
+#else
 static void xradio_pm_stay_awake_tmo(unsigned long arg)
 {
+	struct xradio_pm_state *pm = (struct xradio_pm_state *)arg;
+#endif
+	(void)pm;
 }
 
 int xradio_pm_init(struct xradio_pm_state *pm,
@@ -268,9 +277,13 @@ int xradio_pm_init(struct xradio_pm_state *pm,
 
 	ret = xradio_pm_init_common(pm, hw_priv);
 	if (!ret) {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))
+		timer_setup(&pm->stay_awake, xradio_pm_stay_awake_tmo, 0);
+#else
 		init_timer(&pm->stay_awake);
 		pm->stay_awake.data = (unsigned long)pm;
 		pm->stay_awake.function = xradio_pm_stay_awake_tmo;
+#endif
 	} else 
 		pm_printk(XRADIO_DBG_ERROR,"xradio_pm_init_common failed!\n");
 	return ret;
