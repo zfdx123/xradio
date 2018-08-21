@@ -41,7 +41,7 @@ make -j4 ARCH=arm CROSS_COMPILE=arm-none-eabi- dtbs
 For exmaple, with apropiate archlinux arm kernel build you could use mainline kernel without rebuiding everything, only replacing your dtb-file at `/boot/dtbs/`.
 
 The orange pi zero only has control over the 1.8v regulator and a 3.3v fixed regulator is provided elsewhere
-so we only need one there:
+so we only need one here:
 
 ```
 vdd_wifi: vdd_wifi {
