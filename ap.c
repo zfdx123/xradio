@@ -1173,7 +1173,7 @@ static int xradio_upload_null(struct xradio_vif *priv)
 		.rate = 0xFF,
 	};
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 17))
 	frame.skb = ieee80211_nullfunc_get(priv->hw, priv->vif, false);
 #else
 	frame.skb = ieee80211_nullfunc_get(priv->hw, priv->vif);
