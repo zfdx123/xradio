@@ -175,6 +175,7 @@ static void xradio_queue_gc(unsigned long arg)
 
 int xradio_queue_stats_init(struct xradio_queue_stats *stats,
 			    size_t map_capacity,
+                            size_t map_capacity_size,
 			    xradio_queue_skb_dtor_t skb_dtor,
 			    struct xradio_common *hw_priv)
 {
@@ -187,7 +188,7 @@ int xradio_queue_stats_init(struct xradio_queue_stats *stats,
 	spin_lock_init(&stats->lock);
 	init_waitqueue_head(&stats->wait_link_id_empty);
 	for (i = 0; i < XRWL_MAX_VIFS; i++) {
-		stats->link_map_cache[i] = kzalloc(sizeof(int[map_capacity]), GFP_KERNEL);
+		stats->link_map_cache[i] = kzalloc(map_capacity_size, GFP_KERNEL);
 		if (!stats->link_map_cache[i]) {
 			for (; i >= 0; i--)
 				kfree(stats->link_map_cache[i]);

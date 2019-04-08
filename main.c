@@ -364,7 +364,7 @@ struct ieee80211_hw *xradio_init_common(size_t hw_priv_data_len)
 	hw_priv->ba_timer.function = xradio_ba_timer;
 #endif
 	if (unlikely(xradio_queue_stats_init(&hw_priv->tx_queue_stats,
-			WLAN_LINK_ID_MAX,xradio_skb_dtor, hw_priv))) {
+			WLAN_LINK_ID_MAX,sizeof(int[WLAN_LINK_ID_MAX]),xradio_skb_dtor, hw_priv))) {
 		ieee80211_free_hw(hw);
 		return NULL;
 	}
