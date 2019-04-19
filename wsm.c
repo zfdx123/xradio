@@ -2022,7 +2022,9 @@ int wsm_handle_exception(struct xradio_common *hw_priv, u8 *data, size_t len)
 
 underflow:
 	dev_err(hw_priv->pdev, "Firmware exception.\n");
+#if defined(CONFIG_XRADIO_DEBUG)
 	print_hex_dump_bytes("Exception: ", DUMP_PREFIX_NONE, data, len);
+#endif /* CONFIG_XRADIO_DEBUG */
 	return -EINVAL;
 }
 
