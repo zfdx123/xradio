@@ -440,8 +440,10 @@ static void xradio_bh_rx_dump(struct device *dev, u8 *data, size_t len){
 
 	dev_dbg(dev, "vif %d: sdio rx, msgid %s(0x%.4X) len %d\n",
 			ifid, msgname, msgid, *p);
+#if defined(CONFIG_XRADIO_DEBUG)
 //	print_hex_dump_bytes("<-- ", DUMP_PREFIX_NONE,
 //	                     data, min(len, (size_t) 64));
+#endif /* CONFIG_XRADIO_DEBUG */
 #endif
 }
 
