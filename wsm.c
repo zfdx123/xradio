@@ -2808,7 +2808,7 @@ int wsm_get_tx(struct xradio_common *hw_priv, u8 **data,
 			}
 #else
 			{
-				struct ieee80211_hdr *hdr =
+				struct ieee80211_hdr *hdr __maybe_unused =
 				(struct ieee80211_hdr *)
 					&((u8 *)wsm)[txpriv->offset];
 
@@ -2852,7 +2852,7 @@ int wsm_get_tx(struct xradio_common *hw_priv, u8 **data,
 			}
 #else
 			{
-				struct ieee80211_hdr *hdr =
+				struct ieee80211_hdr *hdr __maybe_unused =
 				(struct ieee80211_hdr *)
 					&((u8 *)wsm)[txpriv->offset];
 
