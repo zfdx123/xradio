@@ -1,5 +1,4 @@
 CONFIG_XRADIO := m
-CONFIG_XRADIO_USE_EXTENSIONS := y
 
 xradio_wlan-y := \
 	fwio.o \
@@ -19,6 +18,8 @@ xradio_wlan-y := \
 	pm.o \
 	ht.o \
 	p2p.o
+
+ccflags-y += -DCONFIG_XRADIO_USE_EXTENSIONS
 
 ccflags-y += -DMCAST_FWDING
 ccflags-y += -DXRADIO_SUSPEND_RESUME_FILTER_ENABLE
