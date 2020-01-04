@@ -231,7 +231,8 @@ int xradio_queue_init(struct xradio_queue *queue,
 
 	for (i = 0; i < XRWL_MAX_VIFS; i++) {
 		queue->link_map_cache[i] =
-				kzalloc(sizeof(int[stats->map_capacity]), GFP_KERNEL);
+				kzalloc(sizeof(int) * stats->map_capacity,
+					GFP_KERNEL);
 		if (!queue->link_map_cache[i]) {
 			for (; i >= 0; i--)
 				kfree(queue->link_map_cache[i]);
