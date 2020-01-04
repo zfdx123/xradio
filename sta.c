@@ -973,7 +973,12 @@ int xradio_remain_on_channel(struct ieee80211_hw *hw,
 	return ret;
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0))
+int xradio_cancel_remain_on_channel(struct ieee80211_hw *hw,
+				    struct ieee80211_vif *vif)
+#else
 int xradio_cancel_remain_on_channel(struct ieee80211_hw *hw)
+#endif
 {
 	struct xradio_common *hw_priv = hw->priv;
 

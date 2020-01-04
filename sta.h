@@ -64,7 +64,12 @@ int xradio_remain_on_channel(struct ieee80211_hw *hw,
 			     struct ieee80211_vif *vif,
                              struct ieee80211_channel *chan,
                              int duration, enum ieee80211_roc_type type);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0))
+int xradio_cancel_remain_on_channel(struct ieee80211_hw *hw,
+				    struct ieee80211_vif *vif);
+#else
 int xradio_cancel_remain_on_channel(struct ieee80211_hw *hw);
+#endif
 int xradio_set_arpreply(struct ieee80211_hw *hw, struct ieee80211_vif *vif);
 u64 xradio_prepare_multicast(struct ieee80211_hw *hw,
                              struct netdev_hw_addr_list *mc_list);
