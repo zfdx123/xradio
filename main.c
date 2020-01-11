@@ -530,21 +530,21 @@ int xradio_core_init(struct sdio_func* func)
 	err = xradio_pm_init(&hw_priv->pm_state, hw_priv);
 	if (err) {
 		dev_dbg(hw_priv->pdev, "xradio_pm_init failed(%d).\n", err);
-		goto err2;
+		goto err1;
 	}
 #endif
 	/* Register bh thread*/
 	err = xradio_register_bh(hw_priv);
 	if (err) {
 		dev_dbg(hw_priv->pdev, "xradio_register_bh failed(%d).\n", err);
-		goto err3;
+		goto err2;
 	}
 
 	/* Load firmware and register Interrupt Handler */
 	err = xradio_load_firmware(hw_priv);
 	if (err) {
 		dev_dbg(hw_priv->pdev, "xradio_load_firmware failed(%d).\n", err);
-		goto err4;
+		goto err3;
 	}
 
 	/* Set sdio blocksize. */
@@ -560,7 +560,7 @@ int xradio_core_init(struct sdio_func* func)
 		/*       in QUEUE mode properly.           */
 		dev_dbg(hw_priv->pdev, "Firmware Startup Timeout!\n");
 		err = -ETIMEDOUT;
-		goto err5;
+		goto err4;
 	}
 	dev_dbg(hw_priv->pdev, "Firmware Startup Done.\n");
 
@@ -582,18 +582,17 @@ int xradio_core_init(struct sdio_func* func)
 	err = xradio_register_common(dev);
 	if (err) {
 		dev_dbg(hw_priv->pdev, "xradio_register_common failed(%d)!\n", err);
-		goto err5;
+		goto err4;
 	}
 
 	return err;
 
-err5:
-	xradio_dev_deinit(hw_priv);
 err4:
-	xradio_unregister_bh(hw_priv);
+	xradio_dev_deinit(hw_priv);
 err3:
-	xradio_pm_deinit(&hw_priv->pm_state);
+	xradio_unregister_bh(hw_priv);
 err2:
+	xradio_pm_deinit(&hw_priv->pm_state);
 err1:
 	xradio_free_common(dev);
 	return err;

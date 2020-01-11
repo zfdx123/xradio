@@ -477,7 +477,8 @@ void xradio_scan_work(struct work_struct *work)
 			scan.scanType = WSM_SCAN_TYPE_BACKGROUND;
 			scan.scanFlags = WSM_SCAN_FLAG_FORCE_BACKGROUND;
 		}
-		scan.ch = kzalloc(sizeof(struct wsm_scan_ch[it - hw_priv->scan.curr]), GFP_KERNEL);
+		scan.ch = kzalloc(sizeof(struct wsm_scan_ch) *
+				  (it - hw_priv->scan.curr), GFP_KERNEL);
 		if (!scan.ch) {
 			hw_priv->scan.status = -ENOMEM;
 			scan_printk(XRADIO_DBG_ERROR, "xr_kzalloc wsm_scan_ch failed.\n");

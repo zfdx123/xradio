@@ -147,9 +147,7 @@ static int xradio_probe_of(struct sdio_func *func)
 		return -EINVAL;
 	}
 
-	devm_request_irq(dev, irq, sdio_irq_handler, 0, "xradio", func);
-
-	return 0;
+	return devm_request_irq(dev, irq, sdio_irq_handler, 0, "xradio", func);
 }
 
 /* Probe Function to be called by SDIO stack when device is discovered */
