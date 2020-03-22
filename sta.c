@@ -910,7 +910,7 @@ int xradio_remain_on_channel(struct ieee80211_hw *hw,
 	int if_id;
 #ifdef	TES_P2P_0002_ROC_RESTART
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0))
-	struct timespec TES_P2P_0002_tmval;
+	struct timespec64 TES_P2P_0002_tmval;
 #else
 	struct timeval TES_P2P_0002_tmval;
 #endif
@@ -919,7 +919,7 @@ int xradio_remain_on_channel(struct ieee80211_hw *hw,
 
 #ifdef	TES_P2P_0002_ROC_RESTART
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0))
-	getnstimeofday(&TES_P2P_0002_tmval);
+	ktime_get_real_ts64(&TES_P2P_0002_tmval);
 	TES_P2P_0002_roc_usec = (s32)TES_P2P_0002_tmval.tv_nsec/1000;
 #else
 	do_gettimeofday(&TES_P2P_0002_tmval);
