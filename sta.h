@@ -13,7 +13,7 @@
 
 
 #ifdef XRADIO_USE_LONG_KEEP_ALIVE_PERIOD
-#define XRADIO_KEEP_ALIVE_PERIOD         (28)
+#define XRADIO_KEEP_ALIVE_PERIOD         (10)
 #else
 /*For Samsung, it is defined as 4*/
 #define XRADIO_KEEP_ALIVE_PERIOD         (4)
