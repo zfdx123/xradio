@@ -13,6 +13,7 @@
 #include <net/cfg80211.h>
 #include <linux/of_net.h>
 #include <linux/mmc/sdio_func.h>
+#include <linux/version.h>
 
 #include "xradio.h"
 #include "fwio.h"
@@ -499,8 +500,12 @@ int xradio_core_init(struct sdio_func* func)
 	int if_id;
 	struct ieee80211_hw *dev;
 	struct xradio_common *hw_priv;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 13, 0)
+	unsigned char addr[ETH_ALEN];
+#else
 	unsigned char randomaddr[ETH_ALEN];
 	const unsigned char *addr = NULL;
+#endif
 
 	//init xradio_common
 	dev = xradio_init_common(sizeof(struct xradio_common));
@@ -513,6 +518,16 @@ int xradio_core_init(struct sdio_func* func)
 	hw_priv->sdio_func = func;
 	sdio_set_drvdata(func, hw_priv);
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 13, 0)
+	// fill in mac addresses
+	if (hw_priv->pdev->of_node) {
+		err = of_get_mac_address(hw_priv->pdev->of_node, addr);
+	}
+	if (err < 0) {
+		dev_warn(hw_priv->pdev, "no mac address provided, using random\n");
+		eth_random_addr(addr);
+	}
+#else
 	// fill in mac addresses
 	if (hw_priv->pdev->of_node) {
 		addr = of_get_mac_address(hw_priv->pdev->of_node);
@@ -522,6 +537,8 @@ int xradio_core_init(struct sdio_func* func)
 		eth_random_addr(randomaddr);
 		addr = randomaddr;
 	}
+#endif
+
 	memcpy(hw_priv->addresses[0].addr, addr, ETH_ALEN);
 	memcpy(hw_priv->addresses[1].addr, addr, ETH_ALEN);
 	hw_priv->addresses[1].addr[5] += 0x01;
