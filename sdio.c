@@ -190,9 +190,11 @@ static int sdio_probe(struct sdio_func *func,
  * device is disconnected */
 static void sdio_remove(struct sdio_func *func)
 {
+	struct mmc_card *card = func->card;
 	xradio_core_deinit(func);
 	sdio_claim_host(func);
 	sdio_disable_func(func);
+	mmc_hw_reset(card->host);
 	sdio_release_host(func);
 }
 
