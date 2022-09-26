@@ -613,6 +613,7 @@ err2:
 	xradio_pm_deinit(&hw_priv->pm_state);
 err1:
 	xradio_free_common(dev);
+	sdio_set_drvdata(func, NULL);
 	return err;
 }
 
@@ -625,6 +626,7 @@ void xradio_core_deinit(struct sdio_func* func)
 		xradio_unregister_bh(hw_priv);
 		xradio_pm_deinit(&hw_priv->pm_state);
 		xradio_free_common(hw_priv->hw);
+		sdio_set_drvdata(func, NULL);
 	}
 	return;
 }
