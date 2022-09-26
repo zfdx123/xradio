@@ -191,6 +191,7 @@ static int sdio_probe(struct sdio_func *func,
  * device is disconnected */
 static void sdio_remove(struct sdio_func *func)
 {
+	xradio_core_deinit(func);
 	sdio_claim_host(func);
 	sdio_disable_func(func);
 	sdio_release_host(func);
