@@ -184,7 +184,6 @@ static int sdio_probe(struct sdio_func *func,
 
 	xradio_core_init(func);
 
-	try_module_get(func->dev.driver->owner);
 	return 0;
 }
 /* Disconnect Function to be called by SDIO stack when
@@ -195,7 +194,6 @@ static void sdio_remove(struct sdio_func *func)
 	sdio_claim_host(func);
 	sdio_disable_func(func);
 	sdio_release_host(func);
-	module_put(func->dev.driver->owner);
 }
 
 static int sdio_suspend(struct device *dev)
