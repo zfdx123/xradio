@@ -887,7 +887,7 @@ void xradio_probe_work(struct work_struct *work)
 	if (!ret)
 		IEEE80211_SKB_CB(frame.skb)->flags |= IEEE80211_TX_STAT_ACK;
 
-		BUG_ON(xradio_queue_remove(queue, hw_priv->pending_frame_id));
+	BUG_ON(xradio_queue_remove(queue, hw_priv->pending_frame_id));
 
 	if (ret) {
 		hw_priv->scan.direct_probe = 0;
