@@ -467,9 +467,15 @@ void xradio_bss_info_changed(struct ieee80211_hw *dev,
 				/* TODO:COMBO:Change this once
 				* mac80211 changes are available */
 				BUG_ON(!hw_priv->channel);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 0))
+				hw_priv->ht_oper.ht_cap = sta->deflink.ht_cap;
+				priv->bss_params.operationalRateSet =__cpu_to_le32(
+				  xradio_rate_mask_to_wsm(hw_priv, sta->deflink.supp_rates[hw_priv->channel->band]));
+#else
 				hw_priv->ht_oper.ht_cap = sta->ht_cap;
 				priv->bss_params.operationalRateSet =__cpu_to_le32(
 				  xradio_rate_mask_to_wsm(hw_priv, sta->supp_rates[hw_priv->channel->band]));
+#endif
 				/* TODO by Icenowy: I think this may lead to some problems. */
 //				hw_priv->ht_oper.channel_type   = info->channel_type;
 				hw_priv->ht_oper.operation_mode = info->ht_operation_mode;
