@@ -1773,7 +1773,7 @@ int wsm_cmd_send(struct xradio_common *hw_priv,
 		hw_priv->wsm_cmd.ptr = NULL;
 		spin_unlock(&hw_priv->wsm_cmd.lock);
 
-		dev_err(hw_priv->pdev, "***CMD timeout!>>> 0x%.4X (%d), buf_use=%d, bh_state=%d\n",
+		dev_err(hw_priv->pdev, "***CMD timeout!>>> 0x%.4X (%zu), buf_use=%d, bh_state=%d\n",
 			   cmd, buf_len, hw_priv->hw_bufs_used, hw_priv->bh_error);
 		/* Race condition check to make sure _confirm is not called
 		 * after exit of _send */
@@ -2002,7 +2002,7 @@ int wsm_handle_exception(struct xradio_common *hw_priv, u8 *data, size_t len)
 		           reason_str[reason]);
 	} else {
 		dev_err(hw_priv->pdev, "Firmware assert at %.*s, line %d, reason=0x%x\n",
-			       sizeof(fname), fname, reg[1], reg[2]);
+			       (int) sizeof(fname), fname, reg[1], reg[2]);
 	}
 
 	for (i = 0; i < 12; i += 4) {
