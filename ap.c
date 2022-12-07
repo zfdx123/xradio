@@ -213,7 +213,11 @@ static int xradio_set_tim_impl(struct xradio_vif *priv, bool aid0_bit_set)
 	ap_printk(XRADIO_DBG_MSG, "%s mcast: %s.\n", __func__, 
 	          aid0_bit_set ? "ena" : "dis");
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
+	skb = ieee80211_beacon_get_tim(priv->hw, priv->vif, &tim_offset, &tim_length, 0);
+#else
 	skb = ieee80211_beacon_get_tim(priv->hw, priv->vif, &tim_offset, &tim_length);
+#endif
 	if (!skb) {
 		__xradio_flush(hw_priv, true, priv->if_id);
 		return -ENOENT;
@@ -349,13 +353,25 @@ static int xradio_set_btcoexinfo(struct xradio_vif *priv)
 	return ret;
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
+void xradio_bss_info_changed(struct ieee80211_hw *dev,
+			     struct ieee80211_vif *vif,
+			     struct ieee80211_bss_conf *info,
+			     u64 changed)
+#else
 void xradio_bss_info_changed(struct ieee80211_hw *dev,
 			     struct ieee80211_vif *vif,
 			     struct ieee80211_bss_conf *info,
 			     u32 changed)
+#endif
 {
 	struct xradio_common *hw_priv = dev->priv;
 	struct xradio_vif *priv = xrwl_get_vif_from_ieee80211(vif);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
+	struct ieee80211_vif_cfg *cfg = &vif->cfg;
+#else
+	struct ieee80211_bss_conf *cfg = info;
+#endif
 
 	mutex_lock(&hw_priv->conf_mutex);
 	if (changed & BSS_CHANGED_BSSID) {
@@ -368,9 +384,9 @@ void xradio_bss_info_changed(struct ieee80211_hw *dev,
 		struct wsm_arp_ipv4_filter filter = {0};
 		int i;
 		ap_printk(XRADIO_DBG_MSG, "[STA] BSS_CHANGED_ARP_FILTER cnt: %d\n",
-		          info->arp_addr_cnt);
+		          cfg->arp_addr_cnt);
 
-		if (info->arp_addr_cnt){
+		if (cfg->arp_addr_cnt){
 			if (vif->type == NL80211_IFTYPE_STATION)
 				filter.enable = (u32)XRADIO_ENABLE_ARP_FILTER_OFFLOAD;
 			else if (priv->join_status == XRADIO_JOIN_STATUS_AP)
@@ -381,10 +397,10 @@ void xradio_bss_info_changed(struct ieee80211_hw *dev,
 
 		/* Currently only one IP address is supported by firmware.
 		 * In case of more IPs arp filtering will be disabled. */
-		if (info->arp_addr_cnt > 0 &&
-		    info->arp_addr_cnt <= WSM_MAX_ARP_IP_ADDRTABLE_ENTRIES) {
-			for (i = 0; i < info->arp_addr_cnt; i++) {
-				filter.ipv4Address[i] = info->arp_addr_list[i];
+		if (cfg->arp_addr_cnt > 0 &&
+		    cfg->arp_addr_cnt <= WSM_MAX_ARP_IP_ADDRTABLE_ENTRIES) {
+			for (i = 0; i < cfg->arp_addr_cnt; i++) {
+				filter.ipv4Address[i] = cfg->arp_addr_list[i];
 				ap_printk(XRADIO_DBG_NIY, "[STA]addr[%d]: 0x%X\n", i, filter.ipv4Address[i]);
 			}
 		} else
@@ -406,8 +422,8 @@ void xradio_bss_info_changed(struct ieee80211_hw *dev,
 #ifdef HIDDEN_SSID
 		if(priv->join_status != XRADIO_JOIN_STATUS_AP) {
 			priv->hidden_ssid = info->hidden_ssid;
-			priv->ssid_length = info->ssid_len;
-			memcpy(priv->ssid, info->ssid, info->ssid_len);
+			priv->ssid_length = cfg->ssid_len;
+			memcpy(priv->ssid, cfg->ssid, cfg->ssid_len);
 		} else
 			ap_printk(XRADIO_DBG_NIY, "priv->join_status=%d\n", priv->join_status);
 #endif
@@ -433,7 +449,7 @@ void xradio_bss_info_changed(struct ieee80211_hw *dev,
 		priv->wep_default_key_id = -1;
 		wsm_unlock_tx(hw_priv);
 
-		if (!info->assoc /* && !info->ibss_joined */) {
+		if (!cfg->assoc /* && !info->ibss_joined */) {
 			priv->cqm_link_loss_count = XRADIO_LINK_LOSS_THOLD_DEF;
 			priv->cqm_beacon_loss_count = XRADIO_BSS_LOSS_THOLD_DEF;
 			priv->cqm_tx_failure_thold = 0;
@@ -451,7 +467,7 @@ void xradio_bss_info_changed(struct ieee80211_hw *dev,
 		int i;
 		struct xradio_vif *tmp_priv;
 		ap_printk(XRADIO_DBG_NIY, "BSS_CHANGED_ASSOC.\n");
-		if (info->assoc) { /* TODO: ibss_joined */
+		if (cfg->assoc) { /* TODO: ibss_joined */
 			struct ieee80211_sta *sta = NULL;
 			if (info->dtim_period)
 				priv->join_dtim_period = info->dtim_period;
@@ -545,7 +561,7 @@ void xradio_bss_info_changed(struct ieee80211_hw *dev,
 			priv->bss_params.beaconLostCount = (priv->cqm_beacon_loss_count ?
 			  priv->cqm_beacon_loss_count : priv->cqm_link_loss_count);
 
-			priv->bss_params.aid = info->aid;
+			priv->bss_params.aid = cfg->aid;
 
 			if (priv->join_dtim_period < 1)
 				priv->join_dtim_period = 1;
@@ -586,7 +602,7 @@ void xradio_bss_info_changed(struct ieee80211_hw *dev,
 				                                  hw_priv->ba_tid_mask, priv->if_id));
 				wsm_unlock_tx(hw_priv);
 			}
-			
+
 			if (priv->vif->p2p) {
 				ap_printk(XRADIO_DBG_NIY, "[STA] Setting p2p powersave configuration.\n");
 				WARN_ON(wsm_set_p2p_ps_modeinfo(hw_priv, &priv->p2p_ps_modeinfo, priv->if_id));
@@ -703,11 +719,11 @@ void xradio_bss_info_changed(struct ieee80211_hw *dev,
 	}
 
 	if (changed & (BSS_CHANGED_PS | BSS_CHANGED_ASSOC)) {
-		if (!info->ps)
+		if (!cfg->ps)
 			priv->powersave_mode.pmMode = WSM_PSM_ACTIVE;
 		else
 			priv->powersave_mode.pmMode = WSM_PSM_FAST_PS;
-		
+
 		ap_printk(XRADIO_DBG_MSG, "[PowerSave] aid: %d, IsSTA: %s, Powersave: %s\n",
 		          priv->bss_params.aid,
 		          priv->join_status == XRADIO_JOIN_STATUS_STA ? "yes" : "no",
@@ -966,7 +982,11 @@ static int xradio_upload_beacon(struct xradio_vif *priv)
 	if (priv->vif->p2p || hw_priv->channel->band == NL80211_BAND_5GHZ)
 		frame.rate = WSM_TRANSMIT_RATE_6;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
+	frame.skb = ieee80211_beacon_get(priv->hw, priv->vif, 0);
+#else
 	frame.skb = ieee80211_beacon_get(priv->hw, priv->vif);
+#endif
 	if (WARN_ON(!frame.skb))
 		return -ENOMEM;
 
@@ -1240,7 +1260,11 @@ static int xradio_start_ap(struct xradio_vif *priv)
 
 #ifndef HIDDEN_SSID
 	/* Get SSID */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
+	skb = ieee80211_beacon_get(priv->hw, priv->vif, 0);
+#else
 	skb = ieee80211_beacon_get(priv->hw, priv->vif);
+#endif
 	if (WARN_ON(!skb)) {
 		ap_printk(XRADIO_DBG_ERROR,"%s, ieee80211_beacon_get failed\n", __func__);
 		return -ENOMEM;
@@ -1566,7 +1590,11 @@ void xradio_ht_oper_update_work(struct work_struct *work)
 		.count = 1,
 	};
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
+	skb = ieee80211_beacon_get(priv->hw, priv->vif, 0);
+#else
 	skb = ieee80211_beacon_get(priv->hw, priv->vif);
+#endif
 	if (WARN_ON(!skb))
 		return;
 
