@@ -47,8 +47,14 @@ void xradio_configure_filter(struct ieee80211_hw *dev,
                              unsigned int changed_flags,
                              unsigned int *total_flags,
                              u64 multicast);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
+int xradio_conf_tx(struct ieee80211_hw *dev, struct ieee80211_vif *vif,
+                   unsigned int link_id, u16 queue,
+		   const struct ieee80211_tx_queue_params *params);
+#else
 int xradio_conf_tx(struct ieee80211_hw *dev, struct ieee80211_vif *vif,
                    u16 queue, const struct ieee80211_tx_queue_params *params);
+#endif
 int xradio_get_stats(struct ieee80211_hw *dev,
                      struct ieee80211_low_level_stats *stats);
 /* Not more a part of interface?

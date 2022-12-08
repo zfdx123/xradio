@@ -326,11 +326,11 @@ static struct sk_buff *xradio_get_skb(struct xradio_common *hw_priv, size_t len)
 		} else {
 			skb = xradio_get_resv_skb(hw_priv, alloc_len);
 			if (skb) {
-				dev_dbg(hw_priv->pdev, "get skb_reserved(%d)!\n", alloc_len);
+				dev_dbg(hw_priv->pdev, "get skb_reserved(%zu)!\n", alloc_len);
 				skb_reserve(skb, WSM_TX_EXTRA_HEADROOM + 8 /* TKIP IV */
 						    - WSM_RX_EXTRA_HEADROOM);
 			} else {
-				dev_dbg(hw_priv->pdev, "xr_alloc_skb failed(%d)!\n", alloc_len);
+				dev_dbg(hw_priv->pdev, "xr_alloc_skb failed(%zu)!\n", alloc_len);
 			}
 		}
 	} else {
@@ -473,7 +473,7 @@ static int xradio_bh_rx(struct xradio_common *hw_priv, u16* nextlen) {
 		return read_len;
 
 	if (read_len < sizeof(struct wsm_hdr) || (read_len > EFFECTIVE_BUF_SIZE)) {
-		dev_err(hw_priv->pdev, "Invalid read len: %d", read_len);
+		dev_err(hw_priv->pdev, "Invalid read len: %zu", read_len);
 		return -1;
 	}
 
@@ -484,7 +484,7 @@ static int xradio_bh_rx(struct xradio_common *hw_priv, u16* nextlen) {
 	alloc_len = sdio_align_len(hw_priv, read_len);
 	/* Check if not exceeding XRADIO capabilities */
 	if (WARN_ON_ONCE(alloc_len > EFFECTIVE_BUF_SIZE)) {
-		dev_err(hw_priv->pdev, "Read aligned len: %d\n", alloc_len);
+		dev_err(hw_priv->pdev, "Read aligned len: %zu\n", alloc_len);
 	}
 
 	/* Get skb buffer. */
@@ -520,7 +520,7 @@ static int xradio_bh_rx(struct xradio_common *hw_priv, u16* nextlen) {
 	wsm_len = __le32_to_cpu(wsm->len);
 
 	if (WARN_ON(wsm_len > read_len)) {
-		dev_err(hw_priv->pdev, "wsm is bigger than data read, read %d but frame is %d\n",
+		dev_err(hw_priv->pdev, "wsm is bigger than data read, read %zu but frame is %zu\n",
 				read_len, wsm_len);
 		ret = -1;
 		goto out;
@@ -689,7 +689,7 @@ static int xradio_bh_tx(struct xradio_common *hw_priv){
 
 			/* Check if not exceeding XRADIO capabilities */
 			if (tx_len > EFFECTIVE_BUF_SIZE) {
-				dev_warn(hw_priv->pdev, "Write aligned len: %d\n", tx_len);
+				dev_warn(hw_priv->pdev, "Write aligned len: %zu\n", tx_len);
 			}
 
 			/* Make sequence number. */

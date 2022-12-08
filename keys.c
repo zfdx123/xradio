@@ -65,13 +65,15 @@ int xradio_set_key(struct ieee80211_hw *dev, enum set_key_cmd cmd,
 		u8 *peer_addr = NULL;
 		int pairwise = (key->flags & IEEE80211_KEY_FLAG_PAIRWISE) ? 1 : 0;
 		int idx = xradio_alloc_key(hw_priv);
-		struct wsm_add_key *wsm_key = &hw_priv->keys[idx];
+		struct wsm_add_key *wsm_key;
 
 		if (idx < 0) {
 			wiphy_err(dev->wiphy, "xradio_alloc_key failed!\n");
 			ret = -EINVAL;
 			goto finally;
 		}
+
+		wsm_key = &hw_priv->keys[idx];
 
 		BUG_ON(pairwise && !sta);
 		if (sta)

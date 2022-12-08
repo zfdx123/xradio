@@ -194,7 +194,11 @@ static void sdio_remove(struct sdio_func *func)
 	xradio_core_deinit(func);
 	sdio_claim_host(func);
 	sdio_disable_func(func);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 18, 0))
+	mmc_hw_reset(card);
+#else
 	mmc_hw_reset(card->host);
+#endif
 	sdio_release_host(func);
 }
 

@@ -172,7 +172,7 @@ static int xradio_parse_sdd(struct xradio_common *hw_priv, u32 *dpll)
 		pElement = FIND_NEXT_ELT(pElement);
 	}
 	
-	dev_dbg(hw_priv->pdev, "sdd size=%d parse len=%d.\n",
+	dev_dbg(hw_priv->pdev, "sdd size=%zu parse len=%d.\n",
 	           hw_priv->sdd->size, parsedLength);
 
 	//

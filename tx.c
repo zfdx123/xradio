@@ -559,7 +559,7 @@ xradio_tx_h_crypt(struct xradio_vif *priv,
 		dev_dbg(priv->hw_priv->pdev,
 			"no space allocated for crypto headers.\n"
 			"headroom: %d, tailroom: %d, "
-			"req_headroom: %d, req_tailroom: %d\n"
+			"req_headroom: %zu, req_tailroom: %zu\n"
 			"Please fix it in xradio_get_skb().\n",
 			skb_headroom(t->skb), skb_tailroom(t->skb),
 			iv_len + WSM_TX_EXTRA_HEADROOM, icv_len);
@@ -569,7 +569,7 @@ xradio_tx_h_crypt(struct xradio_vif *priv,
 		u8 *p;
 		dev_dbg(priv->hw_priv->pdev,
 			"Slowpath: tailroom is not big enough. "
-			"Req: %d, got: %d.\n",
+			"Req: %zu, got: %d.\n",
 			icv_len, skb_tailroom(t->skb));
 
 		p = skb_push(t->skb, offset);
