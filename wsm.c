@@ -2609,7 +2609,11 @@ static int xradio_get_prio_queue(struct xradio_vif *priv,
 		edca = &priv->edca.params[i];
 		score = ((edca->aifns + edca->cwMin) << 16) +
 				(edca->cwMax - edca->cwMin) *
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
+				(get_random_u32() & 0xFFFF);
+#else
 				(prandom_u32() & 0xFFFF);
+#endif
 		if (score < best && (winner < 0 || i != 3)) {
 			best = score;
 			winner = i;
