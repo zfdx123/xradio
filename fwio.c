@@ -70,7 +70,7 @@ static int xradio_get_hw_type(u32 config_reg_val, int *major_revision)
 	//u32 hif_vers = (config_reg_val >> 31) & 0x1;
 
 	/* Check if we have XRADIO*/
-  if (hif_type == 0x4) {
+	if (hif_type == 0x4) {
 		*major_revision = 0x4;
 		hw_type = HIF_HW_TYPE_XRADIO;
 	} else {
