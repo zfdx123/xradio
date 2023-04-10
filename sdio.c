@@ -35,22 +35,34 @@ static const struct sdio_device_id xradio_sdio_ids[] = {
 int sdio_data_read(struct xradio_common* self, unsigned int addr,
                           void *dst, int count)
 {
-	int ret = sdio_memcpy_fromio(self->sdio_func, dst, addr, count);
-//	printk("sdio_memcpy_fromio 0x%x:%d ret %d\n", addr, count, ret);
-#if defined(CONFIG_XRADIO_DEBUG)
-//	print_hex_dump_bytes("sdio read ", 0, dst, min(count,32));
-#endif /* CONFIG_XRADIO_DEBUG */
+	int ret;
+
+	switch (count) {
+	case 4:
+		*((u32 *)dst) = sdio_readl(self->sdio_func, addr, &ret);
+		break;
+	default:
+		ret = sdio_memcpy_fromio(self->sdio_func, dst, addr, count);
+		break;
+	}
+
 	return ret;
 }
 
 int sdio_data_write(struct xradio_common* self, unsigned int addr,
                            const void *src, int count)
 {
-	int ret = sdio_memcpy_toio(self->sdio_func, addr, (void *)src, count);
-//	printk("sdio_memcpy_toio 0x%x:%d ret %d\n", addr, count, ret);
-#if defined(CONFIG_XRADIO_DEBUG)
-//	print_hex_dump_bytes("sdio write", 0, src, min(count,32));
-#endif /* CONFIG_XRADIO_DEBUG */
+	int ret;
+
+	switch (count) {
+	case 4:
+		sdio_writel(self->sdio_func, *((u32 *)src), addr, &ret);
+		break;
+	default:
+		ret = sdio_memcpy_toio(self->sdio_func, addr, (void *)src, count);
+		break;
+	}
+
 	return ret;
 }
 
