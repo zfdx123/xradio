@@ -163,6 +163,9 @@ static const struct ieee80211_ops xradio_ops = {
 	/*.channel_switch	 = xradio_channel_switch,		*/
 	.remain_on_channel = xradio_remain_on_channel,
 	.cancel_remain_on_channel = xradio_cancel_remain_on_channel,
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 2, 0))
+	.wake_tx_queue		= ieee80211_handle_wake_tx_queue,
+#endif 	
 };
 
 
