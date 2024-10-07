@@ -165,7 +165,13 @@ static const struct ieee80211_ops xradio_ops = {
 	.cancel_remain_on_channel = xradio_cancel_remain_on_channel,
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 2, 0))
 	.wake_tx_queue		= ieee80211_handle_wake_tx_queue,
-#endif 	
+#endif
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 9, 0))
+       .add_chanctx = ieee80211_emulate_add_chanctx,
+       .remove_chanctx = ieee80211_emulate_remove_chanctx,
+       .change_chanctx = ieee80211_emulate_change_chanctx,
+       .switch_vif_chanctx = ieee80211_emulate_switch_vif_chanctx,
+#endif
 };
 
 
