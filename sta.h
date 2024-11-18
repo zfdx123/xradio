@@ -31,7 +31,11 @@
 /* mac80211 API								*/
 
 int xradio_start(struct ieee80211_hw *dev);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 12, 0))
+void xradio_stop(struct ieee80211_hw *dev, bool suspend);
+#else
 void xradio_stop(struct ieee80211_hw *dev);
+#endif
 int xradio_add_interface(struct ieee80211_hw *dev, struct ieee80211_vif *vif);
 void xradio_remove_interface(struct ieee80211_hw *dev, struct ieee80211_vif *vif);
 int xradio_change_interface(struct ieee80211_hw *dev,
