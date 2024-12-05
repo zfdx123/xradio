@@ -117,7 +117,7 @@ out:
 	return ret;
 }
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 12, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 11, 0))
 void xradio_stop(struct ieee80211_hw *dev, bool suspend)
 #else
 void xradio_stop(struct ieee80211_hw *dev)
