@@ -31,7 +31,7 @@
 /* mac80211 API								*/
 
 int xradio_start(struct ieee80211_hw *dev);
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 11, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 6, 0))
 void xradio_stop(struct ieee80211_hw *dev, bool suspend);
 #else
 void xradio_stop(struct ieee80211_hw *dev);
